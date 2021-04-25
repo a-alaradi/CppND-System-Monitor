@@ -5,22 +5,23 @@
 #include <vector>
 
 #include "process.h"
-
+#include "linux_parser.h"
 using std::string;
 using std::to_string;
 using std::vector;
 
 // TODO: Return this process's ID
-int Process::Pid() { return 0; }
+// TODO: PLACEHOLDER !!!!!
+int Process::Pid() { return 129720; }
 
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { return 0; }
 
-// TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+// DONE: Return the command that generated this process
+string Process::Command() { return LinuxParser::Command(Process::Pid()); }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+// DONE: Return this process's memory utilization
+string Process::Ram() { return LinuxParser::Ram(Process::Pid()); }
 
 // TODO: Return the user (name) that generated this process
 string Process::User() { return string(); }
