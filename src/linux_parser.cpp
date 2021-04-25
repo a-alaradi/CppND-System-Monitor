@@ -102,21 +102,50 @@ long LinuxParser::UpTime() {
   return systemUpTime;
 }
 
-// TODO: Read and return the number of jiffies for the system
-long LinuxParser::Jiffies() { return 0; }
+// DONE: Read and return the number of jiffies for the system
+long LinuxParser::Jiffies() {
+  return LinuxParser::IdleJiffies() + LinuxParser::ActiveJiffies();
+}
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
-// TODO: Read and return the number of active jiffies for the system
-long LinuxParser::ActiveJiffies() { return 0; }
+// DONE: Read and return the number of active jiffies for the system
+long LinuxParser::ActiveJiffies() {
+  vector<string> timeSnapshot = CpuUtilization();
+  return (stol(timeSnapshot[CPUStates::kUser_]) + stol(timeSnapshot[CPUStates::kNice_]) +
+          stol(timeSnapshot[CPUStates::kSystem_]) + stol(timeSnapshot[CPUStates::kIRQ_]) +
+          stol(timeSnapshot[CPUStates::kSoftIRQ_]) + stol(timeSnapshot[CPUStates::kSteal_]));
+}
 
-// TODO: Read and return the number of idle jiffies for the system
-long LinuxParser::IdleJiffies() { return 0; }
+// DONE: Read and return the number of idle jiffies for the system
+long LinuxParser::IdleJiffies() {
+  vector<string> timeSnapshot = CpuUtilization();
+  return (stol(timeSnapshot[CPUStates::kIdle_]) + stol(timeSnapshot[CPUStates::kIOwait_]));
+}
 
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+// DONE: Read and return CPU utilization
+vector<string> LinuxParser::CpuUtilization() {
+  string line, token;
+  string targetToken = "cpu";
+  vector<string> values;
+  std::ifstream stream(kProcDirectory + kStatFilename);
+  if (stream.is_open()) {
+    while(getline(stream, line)) {
+      std::istringstream lineStream(line);
+      while(lineStream >> token) {
+        if (token == targetToken) {
+          while (lineStream >> token) {
+            values.push_back(token);
+          }
+          return values;
+        }
+      }
+    }
+  }
+  return values;
+}
 
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
