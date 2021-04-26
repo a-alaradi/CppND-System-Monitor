@@ -225,7 +225,7 @@ string LinuxParser::Ram(int pid) {
         }
       }
     }
-    return to_string((std::stoi(usedMemory) / 1000));
+    return to_string((std::stol(usedMemory) / 1000));
 }
 
 // DONE: Read and return the user ID associated with a process
