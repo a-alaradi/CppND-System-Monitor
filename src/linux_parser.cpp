@@ -107,9 +107,29 @@ long LinuxParser::Jiffies() {
   return LinuxParser::IdleJiffies() + LinuxParser::ActiveJiffies();
 }
 
-// TODO: Read and return the number of active jiffies for a PID
+// DONE: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::ActiveJiffies(int pid) {
+  string line, token;
+  vector<string> values;
+  long jiffies;
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    while (linestream >> token) {
+      values.push_back(token);
+    }
+  }
+  if (values.size() > 21) {
+    long user = stol(values[13]);
+    long kernel = stol(values[14]);
+    long children_user = stol(values[15]);
+    long children_kernel = stol(values[16]);
+    jiffies = user + kernel + children_user + children_kernel;
+  }
+  return jiffies;
+}
 
 // DONE: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
@@ -181,7 +201,7 @@ int LinuxParser::RunningProcesses() {
   return runningProcesses;
 }
 
-// TODO: Read and return the command associated with a process
+// DONE: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Command(int pid) {
   string line = "";

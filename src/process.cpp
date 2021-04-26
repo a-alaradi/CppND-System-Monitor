@@ -10,27 +10,34 @@ using std::string;
 using std::to_string;
 using std::vector;
 
-//Process::Process(int pid) : pid_(pid) {}
+Process::Process(int pid) : pid_(pid) {}
 
-// TODO: Return this process's ID
-// TODO: PLACEHOLDER !!!!!
-int Process::Pid() { return 320819; }
+// DONE: Return this process's ID
+int Process::Pid() const { return pid_; }
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+void Process::CpuUtilization(long activeTicks, long systemTicks) {
+  cpu_ = static_cast<float> (activeTicks) / systemTicks;
+}
+
+// DONE: Return this process's CPU utilization
+float Process::CpuUtilization() const { return cpu_; }
 
 // DONE: Return the command that generated this process
-string Process::Command() { return LinuxParser::Command(Process::Pid()); }
+string Process::Command() const { return LinuxParser::Command(Process::Pid()); }
 
 // DONE: Return this process's memory utilization
-string Process::Ram() { return LinuxParser::Ram(Process::Pid()); }
+string Process::Ram() const { return LinuxParser::Ram(Process::Pid()); }
 
 // DONE: Return the user (name) that generated this process
-string Process::User() { return LinuxParser::User(Process::Pid()); }
+string Process::User() const { return LinuxParser::User(Process::Pid()); }
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return LinuxParser::UpTime(Process::Pid()); }
+// DONE: Return the age of this process (in seconds)
+long int Process::UpTime() const { return LinuxParser::UpTime(Process::Pid()); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+// DONE: Overload the "less than" comparison operator for Process objects
+bool Process::operator>(const Process& a) const {
+  return CpuUtilization() > a.CpuUtilization();
+}
+bool Process::operator<(const Process& a) const {
+  return CpuUtilization() < a.CpuUtilization();
+}
